@@ -17,10 +17,6 @@ function Player_x (Joystick: number) {
     return sx
 }
 
-function Test1(){
-    
-}
-
 let inAir = 0
 let jumpOffset = 0
 let jumpHeight = 0
