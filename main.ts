@@ -1,10 +1,13 @@
 function Player_y (jump: boolean) {
     sy += Gravity
     if (MainPlayer.isHittingTile(CollisionDirection.Bottom)) {
+        inAir = 0
         sy = 0
-        if (jump) {
-            sy = 20
-        }
+    } else {
+        inAir += 1
+    }
+    if (jump && inAir < jumpOffset) {
+        sy = jumpHeight
     }
     return sy
 }
@@ -13,6 +16,9 @@ function Player_x (Joystick: number) {
     sx = sx * Friction
     return sx
 }
+let inAir = 0
+let jumpOffset = 0
+let jumpHeight = 0
 let Gravity = 0
 let Friction = 0
 let Aceleration = 0
@@ -41,10 +47,12 @@ sx = 0
 sy = 0
 Aceleration = 10
 Friction = 0.8
-Gravity = 4
+Gravity = 6
+jumpHeight = -120
+jumpOffset = 8
 tiles.setCurrentTilemap(tilemap`level1`)
+scene.cameraFollowSprite(MainPlayer)
 game.onUpdate(function () {
     MainPlayer.vx = Player_x(controller.dx())
     MainPlayer.vy = Player_y(controller.up.isPressed())
-    console.log(sy)
 })
