@@ -17,6 +17,30 @@ function Player_x (Joystick: number) {
     return sx
 }
 
+function SpawnEnemy(enemyImg : Image, xPos : number, yPos : number) : Sprite{
+    let enemy = sprites.create(enemyImg, SpriteKind.Enemy)
+    enemy.setPosition(xPos, yPos)
+    return enemy
+}
+
+function EnemyPatrol(enemy: Sprite, px1: number, py1: number, px2: number, py2 : number, speed: number){
+    let moving2: boolean = enemy.x > px1
+    if(moving2){
+        MoveToPoint(enemy, px2, py2, speed)
+    }
+    else{
+        MoveToPoint(enemy, px1, py1, speed)
+    }
+}
+
+function MoveToPoint(sprite: Sprite, px: number, py: number, speed: number){
+    let dirx = px - sprite.x
+    let diry = py - sprite.y
+    let mag = Math.sqrt((dirx ** 2) + (diry ** 2))
+    sprite.setVelocity((dirx / mag) * speed, (diry / mag) * speed)
+}
+
+let testEnemy = SpawnEnemy(sprites.duck.duck1, 20, 1958)
 let inAir = 0
 let jumpOffset = 0
 let jumpHeight = 0
@@ -54,6 +78,7 @@ jumpOffset = 8
 tiles.setCurrentTilemap(tilemap`level1`)
 scene.cameraFollowSprite(MainPlayer)
 game.onUpdate(function () {
+    EnemyPatrol(testEnemy, 20, 1958, 100, 1958, 20)
     MainPlayer.vx = Player_x(controller.dx())
     MainPlayer.vy = Player_y(controller.up.isPressed())
 })
