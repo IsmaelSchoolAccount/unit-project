@@ -1,12 +1,25 @@
+function Player_y (jump: boolean) {
+    sy += Gravity
+    if (MainPlayer.isHittingTile(CollisionDirection.Bottom)) {
+        sy = 0
+        if (jump) {
+            sy = 20
+        }
+    }
+    return sy
+}
 function Player_x (Joystick: number) {
     sx += Joystick * Aceleration
     sx = sx * Friction
     return sx
 }
+let Gravity = 0
 let Friction = 0
 let Aceleration = 0
+let sy = 0
 let sx = 0
-let MainPlayer = sprites.create(img`
+let MainPlayer: Sprite = null
+MainPlayer = sprites.create(img`
     . . . . . . f f f f . . . . . . 
     . . . . f f f 2 2 f f f . . . . 
     . . . f f f 2 2 2 2 f f f . . . 
@@ -25,10 +38,13 @@ let MainPlayer = sprites.create(img`
     . . . . . f f . . f f . . . . . 
     `, SpriteKind.Player)
 sx = 0
-let sy = 0
+sy = 0
 Aceleration = 10
 Friction = 0.8
+Gravity = 4
 tiles.setCurrentTilemap(tilemap`level1`)
 game.onUpdate(function () {
     MainPlayer.vx = Player_x(controller.dx())
+    MainPlayer.vy = Player_y(controller.up.isPressed())
+    console.log(sy)
 })
