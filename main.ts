@@ -25,6 +25,7 @@ MainPlayer = sprites.create(img`
     `, SpriteKind.Player)
 function Player_y (jump: boolean) {
     sy += Gravity
+    // conditional statements and booleans
     if (MainPlayer.isHittingTile(CollisionDirection.Bottom)) {
         inAir = 0
         sy = 0
@@ -42,31 +43,31 @@ function Player_x (Joystick: number) {
     return sx
 }
 
+// Function with return value and parameters
 function SpawnEnemy(enemyImg : Image, xPos : number, yPos : number) : Sprite{
     let enemy = sprites.create(enemyImg, SpriteKind.Enemy)
     enemy.setPosition(xPos, yPos)
-    enemy.data = true
+    moving2List.push(true)
     return enemy
 }
 
-function EnemyPatrol(enemy: Sprite, px1: number, py1: number, px2: number, py2 : number, speed: number){
-    console.log(enemy.x + " " + px2 + " " + enemy.data)
-    if (enemy.x > px2 && enemy.data){
-        enemy.data = false
+function EnemyPatrol(enemy: Sprite, px1: number, py1: number, px2: number, py2 : number, speed: number, enemyNum: number){
+    if (enemy.x > px2 && moving2List[enemyNum]){
+        moving2List[enemyNum] = false
     }
-    else if (enemy.x < px1 && !enemy.data){
-        enemy.data = true
+    else if (enemy.x < px1 && !moving2List[enemyNum]){
+        moving2List[enemyNum] = true
     }
     if(enemy.data){
-        MoveToPoint(enemy, px2, py2, speed)
+        MoveToPoint(enemy, px2, py2, speed, enemyNum)
     }
     else{
-        MoveToPoint(enemy, px1, py1, speed)
+        MoveToPoint(enemy, px1, py1, speed, enemyNum)
     }
 }
 
-function MoveToPoint(sprite: Sprite, px: number, py: number, speed: number){
-    if ((sprite.data && sprite.x > px) || (!sprite.data && sprite.x < px)){
+function MoveToPoint(sprite: Sprite, px: number, py: number, speed: number, enemyNum: number){
+    if ((moving2List[enemyNum] && sprite.x > px) || (!moving2List[enemyNum] && sprite.x < px)){
         return
     }
 
@@ -76,8 +77,16 @@ function MoveToPoint(sprite: Sprite, px: number, py: number, speed: number){
     sprite.setVelocity((dirx / mag) * speed, (diry / mag) * speed)
 }
 
-let testEnemy = SpawnEnemy(sprites.duck.duck1, 50, 1958)
-let inAir = 0
+let PlayerAnimationFall: Image[] = []
+let PlayerAnimationJump: Image[] = []
+let PlayerAnimationIdle: Image[] = []
+let PlayerAnimationLeft: Image[] = []
+let PlayerAnimationRight: Image[] = []
+let PlayerAnimationFrame = 0
+let inAir = 1000
+// Arrays
+let moving2List: Array<boolean> = []
+let enemiesList: Array<Sprite> = []
 let jumpOffset = 0
 let jumpHeight = 0
 let Gravity = 0
@@ -93,10 +102,26 @@ Friction = 0.8
 Gravity = 6
 jumpHeight = -120
 jumpOffset = 8
+// Tilemaps
 tiles.setCurrentTilemap(tilemap`level1`)
+tiles.placeOnTile(MainPlayer, tiles.getTileLocation(5, 122))
 scene.cameraFollowSprite(MainPlayer)
+let testEnemy = SpawnEnemy(sprites.castle.skellyFront, 50, 568)
+enemiesList.push(testEnemy)
+// Program output
 game.onUpdate(function () {
-    EnemyPatrol(testEnemy, 20, 1958, 100, 1958, 20)
+    // for loop
+    for(let i = 0; i < enemiesList.length; i++){
+        EnemyPatrol(testEnemy, 20, 568, 100, 568, 20, i)
+    }
+
+    // User input
     MainPlayer.vx = Player_x(controller.dx())
     MainPlayer.vy = Player_y(controller.up.isPressed())
+})
+game.onUpdateInterval(200, function () {
+    Animation()
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function(player: Sprite){
+    player.setPosition(5, 122)
 })
