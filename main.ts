@@ -1,3 +1,10 @@
+
+info.player1.setLife(3)
+scene.onOverlapTile(SpriteKind.Player, sprites.dungeon.hazardLava1, function(sprite: Sprite, location: tiles.Location) {
+    info.changeLifeBy(-1)
+    
+})
+
 function Player_y (jump: boolean) {
     sy += Gravity
     if (MainPlayer.isHittingTile(CollisionDirection.Bottom)) {
@@ -79,6 +86,7 @@ MainPlayer = sprites.create(img`
     . . . . . f f f f f f . . . . . 
     . . . . . f f . . f f . . . . . 
     `, SpriteKind.Player)
+tiles.placeOnTile(MainPlayer, tiles.getTileLocation(1, 5))
 sx = 0
 sy = 0
 Aceleration = 10
