@@ -20,12 +20,19 @@ function Player_x (Joystick: number) {
 function SpawnEnemy(enemyImg : Image, xPos : number, yPos : number) : Sprite{
     let enemy = sprites.create(enemyImg, SpriteKind.Enemy)
     enemy.setPosition(xPos, yPos)
+    enemy.data = true
     return enemy
 }
 
 function EnemyPatrol(enemy: Sprite, px1: number, py1: number, px2: number, py2 : number, speed: number){
-    let moving2: boolean = enemy.x > px1
-    if(moving2){
+    console.log(enemy.x + " " + px2 + " " + enemy.data)
+    if (enemy.x > px2 && enemy.data){
+        enemy.data = false
+    }
+    else if (enemy.x < px1 && !enemy.data){
+        enemy.data = true
+    }
+    if(enemy.data){
         MoveToPoint(enemy, px2, py2, speed)
     }
     else{
@@ -34,13 +41,17 @@ function EnemyPatrol(enemy: Sprite, px1: number, py1: number, px2: number, py2 :
 }
 
 function MoveToPoint(sprite: Sprite, px: number, py: number, speed: number){
+    if ((sprite.data && sprite.x > px) || (!sprite.data && sprite.x < px)){
+        return
+    }
+
     let dirx = px - sprite.x
     let diry = py - sprite.y
     let mag = Math.sqrt((dirx ** 2) + (diry ** 2))
     sprite.setVelocity((dirx / mag) * speed, (diry / mag) * speed)
 }
 
-let testEnemy = SpawnEnemy(sprites.duck.duck1, 20, 1958)
+let testEnemy = SpawnEnemy(sprites.duck.duck1, 50, 1958)
 let inAir = 0
 let jumpOffset = 0
 let jumpHeight = 0
